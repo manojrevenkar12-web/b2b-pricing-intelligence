@@ -23,10 +23,10 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -e ".[dev]"
-      - run: ruff check src tests
+      - run: scripts/ci-run.sh ruff check src tests
       - run: ruff format --check src tests
-      - run: mypy
-      - run: pytest -q -p no:warnings
+      - run: scripts/ci-run.sh mypy
+      - run: scripts/ci-run.sh pytest -q -p no:warnings
 
   pipeline:
     name: full pipeline, evaluation and release gate
@@ -40,9 +40,9 @@ jobs:
           cache: pip
       - run: pip install -e .
       - name: generate, ingest, dbt build, train, evaluate, export, gate
-        run: bpi run
+        run: scripts/ci-run.sh bpi run
       - name: handover readiness
-        run: bpi handover-check
+        run: scripts/ci-run.sh bpi handover-check
       - name: assistant smoke test
         run: bpi ask "win rate by region in 2025" --role sales_rep --region EMEA
       - name: summary
