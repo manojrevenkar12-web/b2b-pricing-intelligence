@@ -1,0 +1,10 @@
+source: erp_off_invoice
+owner: Finance (ERP billing)
+description: Concessions that do not appear on the invoice (freight, expedites, warranty, early payment).
+key: [invoice_id, item_type]
+columns:
+  invoice_id: {type: string, required: true}
+  item_type: {type: string, required: true, allowed: [freight_absorbed, expedite_free, extended_warranty, early_payment_discount]}
+  amount_lc: {type: float, required: true, min: 0}
+relations:
+  - {column: invoice_id, references: erp_invoices.invoice_id}

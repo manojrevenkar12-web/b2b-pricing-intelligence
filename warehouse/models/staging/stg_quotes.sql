@@ -1,0 +1,22 @@
+select
+    quote_id,
+    opportunity_id,
+    customer_id,
+    rep_id,
+    product_id,
+    quote_date,
+    {{ month_of('quote_date') }} as quote_month,
+    decision_date,
+    {{ month_of('decision_date') }} as decision_month,
+    currency,
+    list_price_lc,
+    net_price_lc,
+    scope_qty,
+    outage_urgent,
+    competitor_present,
+    price_test_cell,
+    approval_level,
+    status,
+    status in ('won', 'lost') as is_decided,
+    case when status = 'won' then 1 else 0 end as won
+from {{ source('raw', 'cpq_quotes') }}

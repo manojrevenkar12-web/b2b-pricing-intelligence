@@ -1,0 +1,11 @@
+source: market_competitor_intel
+owner: Market intelligence
+description: Observed competitor prices as a ratio to our list price, from debriefs, tenders and distributors.
+key: []
+columns:
+  observed_at: {type: date, required: true, max: as_of}
+  region: {type: string, required: true, allowed: [EMEA, AMERICAS, APAC, MIDDLE_EAST]}
+  product_family: {type: string, required: true}
+  competitor: {type: string, required: true}
+  price_index_vs_list: {type: float, required: true, min: 0.3, max: 2.0}
+  source: {type: string, required: true}

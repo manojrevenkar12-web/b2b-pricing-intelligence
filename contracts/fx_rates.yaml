@@ -1,0 +1,8 @@
+source: fx_rates
+owner: Treasury
+description: Monthly average exchange rates, EUR per unit of currency.
+key: [month, currency]
+columns:
+  month: {type: date, required: true}
+  currency: {type: string, required: true, allowed: [EUR, USD, GBP, AED]}
+  eur_per_unit: {type: float, required: true, min_exclusive: 0}

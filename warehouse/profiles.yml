@@ -1,0 +1,19 @@
+# Local and CI: DuckDB file written by `bpi ingest`.
+# Production: the same models on Snowflake (`--target snowflake`); needs dbt-snowflake and the env vars.
+pricing_warehouse:
+  target: duckdb
+  outputs:
+    duckdb:
+      type: duckdb
+      path: "{{ env_var('BPI_WAREHOUSE', '../data/warehouse.duckdb') }}"
+      threads: 4
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', '') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', '') }}"
+      authenticator: externalbrowser
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'PRICING_TRANSFORM') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'PRICING_WH') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'GAS_SERVICES_PRICING') }}"
+      schema: analytics
+      threads: 8

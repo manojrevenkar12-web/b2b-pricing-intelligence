@@ -1,0 +1,15 @@
+# Who may ask what. In Snowflake this maps to row access policies (region) and to restricting the
+# cost-based metrics; locally the compiler enforces it before any SQL runs.
+roles:
+  sales_rep:
+    regions: own            # every query is filtered to the user's region
+    denied_metrics: [quoted_margin_pct, pocket_margin_pct]
+    denied_dimensions: [rep_name]
+  regional_manager:
+    regions: own
+    denied_metrics: []
+    denied_dimensions: []
+  pricing_analyst:
+    regions: all
+    denied_metrics: []
+    denied_dimensions: []

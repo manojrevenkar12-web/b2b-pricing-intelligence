@@ -1,0 +1,8 @@
+source: crm_users
+owner: Global Sales Operations (CRM)
+description: Sales reps and their regions.
+key: [rep_id]
+columns:
+  rep_id: {type: string, required: true}
+  rep_name: {type: string, required: true}
+  region: {type: string, required: true, allowed: [EMEA, AMERICAS, APAC, MIDDLE_EAST]}

@@ -1,0 +1,76 @@
+# Semantic model for questions about Gas Services pricing, in the shape of Snowflake's semantic
+# view YAML (tables, dimensions, time_dimensions, facts, metrics, verified_queries), so the same
+# file can back Cortex Analyst in Snowflake. Locally, `bpi ask` compiles questions against it.
+# Who may see which metric and region is not part of this file: see access_policy.yaml.
+name: gas_services_pricing
+description: Quotes, wins, discounts and price waterfalls for Gas Services (spare parts, field service, repairs, upgrades, long-term service agreements).
+
+tables:
+  - name: quotes
+    description: One row per quote with its outcome.
+    base_table: {database: GAS_SERVICES_PRICING, schema: MARTS, table: FCT_QUOTES}
+    primary_key: {columns: [quote_id]}
+    dimensions:
+      - {name: region, expr: region, data_type: VARCHAR, synonyms: [regions, area], sample_values: [EMEA, AMERICAS, APAC, MIDDLE_EAST], is_enum: true}
+      - {name: service_line, expr: service_line, data_type: VARCHAR, synonyms: [service lines, business line, line, product line], sample_values: [spare_parts, field_service, repairs, upgrades, ltsa], is_enum: true}
+      - {name: product_family, expr: product_family, data_type: VARCHAR, synonyms: [product families, family, product]}
+      - {name: segment, expr: segment, data_type: VARCHAR, synonyms: [segments, customer segment, customer type], sample_values: [utility, ipp, oil_and_gas, industrial], is_enum: true}
+      - {name: rep_name, expr: rep_name, data_type: VARCHAR, synonyms: [rep, reps, sales rep, sales reps, salesperson, account manager]}
+      - {name: customer_name, expr: customer_name, data_type: VARCHAR, synonyms: [customer, customers, account, accounts]}
+      - {name: competitor_present, expr: competitor_present, data_type: BOOLEAN, synonyms: [competition, competitor]}
+      - {name: outage_urgent, expr: outage_urgent, data_type: BOOLEAN, synonyms: [urgent, outage, urgency, outage urgency]}
+    time_dimensions:
+      - {name: quote_date, expr: quote_date, data_type: DATE, synonyms: [quoted, quote month]}
+    facts:
+      - {name: net_eur, expr: net_eur, data_type: NUMBER, description: Quoted net price in EUR}
+      - {name: list_eur, expr: list_eur, data_type: NUMBER}
+      - {name: cost_eur, expr: cost_eur, data_type: NUMBER, access_modifier: private_access}
+    metrics:
+      - {name: quote_count, expr: count(*), synonyms: [quotes, number of quotes, quote volume]}
+      - {name: win_rate, expr: "sum(case when is_decided then won end) * 1.0 / nullif(sum(case when is_decided then 1 end), 0)", synonyms: [hit rate, conversion, win ratio, win rate]}
+      - {name: quoted_value_eur, expr: sum(net_eur), synonyms: [quoted value, quote value, quoted revenue]}
+      - {name: booked_value_eur, expr: "sum(case when won = 1 then net_eur else 0 end)", synonyms: [bookings, booked value, order intake, won value, book, booked]}
+      - {name: average_discount, expr: avg(1 - price_ratio), synonyms: [discount, avg discount, average discount, discount level]}
+      - {name: quoted_margin_pct, expr: "sum(net_eur - cost_eur) / nullif(sum(net_eur), 0)", synonyms: [quoted margin, margin on quotes, gross margin]}
+
+  - name: invoices
+    description: One row per invoice with its price waterfall from list to pocket price.
+    base_table: {database: GAS_SERVICES_PRICING, schema: MARTS, table: FCT_PRICE_WATERFALL}
+    primary_key: {columns: [invoice_id]}
+    dimensions:
+      - {name: region, expr: region, data_type: VARCHAR, synonyms: [regions, area], sample_values: [EMEA, AMERICAS, APAC, MIDDLE_EAST], is_enum: true}
+      - {name: service_line, expr: service_line, data_type: VARCHAR, synonyms: [service lines, business line, line, product line], sample_values: [spare_parts, field_service, repairs, upgrades, ltsa], is_enum: true}
+      - {name: product_family, expr: product_family, data_type: VARCHAR, synonyms: [product families, family, product]}
+      - {name: segment, expr: segment, data_type: VARCHAR, synonyms: [segments, customer segment, customer type], sample_values: [utility, ipp, oil_and_gas, industrial], is_enum: true}
+      - {name: rep_name, expr: rep_name, data_type: VARCHAR, synonyms: [rep, reps, sales rep, sales reps, salesperson, account manager]}
+      - {name: customer_name, expr: customer_name, data_type: VARCHAR, synonyms: [customer, customers, account, accounts]}
+    time_dimensions:
+      - {name: invoice_date, expr: invoice_date, data_type: DATE, synonyms: [invoiced, invoice month]}
+    facts:
+      - {name: invoice_eur, expr: invoice_eur, data_type: NUMBER}
+      - {name: pocket_eur, expr: pocket_eur, data_type: NUMBER}
+      - {name: cost_eur, expr: cost_eur, data_type: NUMBER, access_modifier: private_access}
+    metrics:
+      - {name: invoiced_eur, expr: sum(invoice_eur), synonyms: [revenue, invoiced revenue, sales, invoiced, invoice]}
+      - {name: pocket_price_eur, expr: sum(pocket_eur), synonyms: [pocket price, pocket revenue]}
+      - {name: off_invoice_eur, expr: sum(off_invoice_eur), synonyms: [off-invoice, off invoice, concessions, leakage, giveaways]}
+      - {name: off_invoice_pct, expr: "sum(off_invoice_eur) / nullif(sum(invoice_eur), 0)", synonyms: [off-invoice share, share off-invoice, share of invoiced revenue goes off-invoice, leakage rate, concession rate, leakage percentage]}
+      - {name: pocket_to_list_pct, expr: "sum(pocket_eur) / nullif(sum(list_eur), 0)", synonyms: [pocket price realisation, price realisation, realisation]}
+      - {name: pocket_margin_pct, expr: "sum(pocket_eur - cost_eur) / nullif(sum(pocket_eur), 0)", synonyms: [pocket margin, margin after concessions, net margin]}
+
+verified_queries:
+  - name: win_rate_by_region_2025
+    question: What was the win rate by region in 2025?
+    sql: |
+      select region, sum(case when is_decided then won end) * 1.0 / nullif(sum(case when is_decided then 1 end), 0) as win_rate
+      from marts.fct_quotes where quote_date >= date '2025-01-01' and quote_date < date '2026-01-01'
+      group by region order by region
+    verified_by: Global Pricing Strategy
+    use_as_onboarding_question: true
+  - name: leakage_by_line
+    question: What share of invoiced revenue goes off-invoice, by service line?
+    sql: |
+      select service_line, sum(off_invoice_eur) / nullif(sum(invoice_eur), 0) as off_invoice_pct
+      from marts.fct_price_waterfall group by service_line order by service_line
+    verified_by: Global Pricing Strategy
+    use_as_onboarding_question: true

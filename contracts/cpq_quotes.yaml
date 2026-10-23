@@ -1,0 +1,25 @@
+source: cpq_quotes
+owner: Global Pricing Strategy (CPQ)
+description: Quotes from the configure-price-quote tool, in the customer's billing currency.
+key: [quote_id]
+columns:
+  quote_id: {type: string, required: true, pattern: "^Q\\d{6}$"}
+  opportunity_id: {type: string, required: true}
+  customer_id: {type: string, required: true}
+  rep_id: {type: string, required: true}
+  product_id: {type: string, required: true}
+  quote_date: {type: date, required: true, max: as_of}
+  decision_date: {type: date, required: false, max: as_of}
+  currency: {type: string, required: true, allowed: [EUR, USD, GBP, AED]}
+  list_price_lc: {type: float, required: true, min_exclusive: 0}
+  net_price_lc: {type: float, required: true, min_exclusive: 0}
+  scope_qty: {type: int, required: true, min: 1}
+  outage_urgent: {type: bool, required: true}
+  competitor_present: {type: bool, required: true}
+  price_test_cell: {type: float, required: false, allowed: [-0.06, -0.03, 0.0, 0.03, 0.06]}
+  approval_level: {type: string, required: true, allowed: [rep, deal_desk, vp]}
+  status: {type: string, required: true, allowed: [open, won, lost]}
+relations:
+  - {column: customer_id, references: crm_accounts.customer_id}
+  - {column: rep_id, references: crm_users.rep_id}
+  - {column: product_id, references: erp_products.product_id}

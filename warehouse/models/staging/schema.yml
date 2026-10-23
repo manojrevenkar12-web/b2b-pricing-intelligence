@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: Customer accounts with their contracted rebate rate and payment terms.
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]
+      - name: region
+        tests:
+          - accepted_values: {arguments: {values: [EMEA, AMERICAS, APAC, MIDDLE_EAST]}}
+  - name: stg_reps
+    description: Sales reps.
+    columns:
+      - name: rep_id
+        tests: [unique, not_null]
+  - name: stg_products
+    description: Service and parts catalogue.
+    columns:
+      - name: product_id
+        tests: [unique, not_null]
+      - name: service_line
+        tests:
+          - accepted_values: {arguments: {values: [spare_parts, field_service, repairs, upgrades, ltsa]}}
+  - name: stg_price_list
+    description: List prices in EUR.
+  - name: stg_standard_cost
+    description: Standard cost per product and month.
+  - name: stg_fx
+    description: Monthly FX rates.
+  - name: stg_quotes
+    description: Quotes in the billing currency, with decision flags.
+    columns:
+      - name: quote_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests:
+          - relationships: {arguments: {to: ref('stg_customers'), field: customer_id}}
+  - name: stg_opportunities
+    description: One row per CRM opportunity.
+    columns:
+      - name: opportunity_id
+        tests: [unique, not_null]
+  - name: stg_opportunity_stages
+    description: Stage history.
+  - name: stg_invoices
+    description: Invoices.
+    columns:
+      - name: invoice_id
+        tests: [unique, not_null]
+  - name: stg_off_invoice
+    description: Off-invoice concessions.
+  - name: stg_rebate_payments
+    description: Rebate payments.
+  - name: stg_competitor_intel
+    description: Competitor price observations.
+  - name: stg_commodity_index
+    description: Nickel-alloy index.

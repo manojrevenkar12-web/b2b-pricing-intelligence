@@ -1,0 +1,10 @@
+source: erp_products
+owner: Gas Services product management (ERP)
+description: Service and parts catalogue.
+key: [product_id]
+columns:
+  product_id: {type: string, required: true}
+  service_line: {type: string, required: true, allowed: [spare_parts, field_service, repairs, upgrades, ltsa]}
+  product_family: {type: string, required: true}
+  unit_type: {type: string, required: true, allowed: [HD_GT, IND_GT, AERO_GT, ST, GEN]}
+  description: {type: string, required: true}

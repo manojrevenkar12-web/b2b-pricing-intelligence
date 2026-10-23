@@ -1,0 +1,24 @@
+version: 2
+
+# Loaded by `bpi ingest`, which enforces the data contracts in ../contracts and quarantines rows
+# that break them. Everything here has passed its contract.
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - {name: crm_accounts, description: Customer accounts (CRM)}
+      - {name: crm_users, description: Sales reps (CRM)}
+      - {name: crm_opportunities, description: Opportunities (CRM), exact re-sends removed}
+      - {name: crm_opportunity_stages, description: Opportunity stage history (CRM)}
+      - {name: cpq_quotes, description: Quotes in the billing currency (CPQ)}
+      - {name: erp_products, description: Service and parts catalogue (ERP)}
+      - {name: erp_price_list, description: List prices in EUR per validity period}
+      - {name: erp_standard_cost, description: Standard cost per product and month (ERP)}
+      - {name: erp_invoices, description: Invoices (ERP billing)}
+      - {name: erp_off_invoice, description: Off-invoice concessions (ERP billing)}
+      - {name: erp_rebate_payments, description: Yearly rebate payments (accounts payable)}
+      - {name: contracts, description: Contracted rebate rates and payment terms}
+      - {name: market_competitor_intel, description: Observed competitor prices vs our list}
+      - {name: market_commodity_index, description: Nickel-alloy index}
+      - {name: fx_rates, description: Monthly average FX rates, EUR per unit}
+      - {name: _quarantine, description: Rows held back by the data contracts, with the reason}

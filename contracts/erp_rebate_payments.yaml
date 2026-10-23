@@ -1,0 +1,11 @@
+source: erp_rebate_payments
+owner: Finance (accounts payable)
+description: Yearly volume rebates paid to customers, in EUR.
+key: [payment_id]
+columns:
+  payment_id: {type: string, required: true}
+  customer_id: {type: string, required: true}
+  year: {type: int, required: true, min: 2020, max: 2026}
+  amount_eur: {type: float, required: true, min: 0}
+relations:
+  - {column: customer_id, references: crm_accounts.customer_id}

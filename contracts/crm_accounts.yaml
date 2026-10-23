@@ -1,0 +1,13 @@
+source: crm_accounts
+owner: Global Sales Operations (CRM)
+description: Customer accounts from the CRM, one row per account.
+key: [customer_id]
+columns:
+  customer_id: {type: string, required: true, pattern: "^C\\d{4}$"}
+  customer_name: {type: string, required: true}
+  region: {type: string, required: true, allowed: [EMEA, AMERICAS, APAC, MIDDLE_EAST]}
+  country: {type: string, required: true, pattern: "^[A-Z]{2}$"}
+  segment: {type: string, required: true, allowed: [utility, ipp, oil_and_gas, industrial]}
+  billing_currency: {type: string, required: true, allowed: [EUR, USD, GBP, AED]}
+  strategic_account: {type: bool, required: true}
+  relationship_since: {type: int, required: true, min: 1950, max: 2026}

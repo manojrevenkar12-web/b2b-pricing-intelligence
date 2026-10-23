@@ -1,0 +1,7 @@
+# Business rules and release objectives: Global Pricing Strategy
+/config/            @gas-services/global-pricing-strategy
+/semantic/          @gas-services/global-pricing-strategy @gas-services/sales-operations
+# Data contracts: the owners of each source review changes to them
+/contracts/         @gas-services/sales-operations @gas-services/finance-data
+/warehouse/         @gas-services/pricing-analytics
+/src/               @gas-services/pricing-analytics

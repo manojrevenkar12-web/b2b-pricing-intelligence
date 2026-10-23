@@ -1,0 +1,748 @@
+{
+  "as_of": "2026-09-30",
+  "model_version": "20261023T095404Z",
+  "data_quality": {
+    "planted_defects": 487,
+    "caught": 487,
+    "caught_share": 1.0,
+    "by_issue": {
+      "amount_in_cents": {
+        "sum": 73,
+        "count": 73
+      },
+      "bad_currency": {
+        "sum": 40,
+        "count": 40
+      },
+      "duplicate_row": {
+        "sum": 250,
+        "count": 250
+      },
+      "future_date": {
+        "sum": 40,
+        "count": 40
+      },
+      "missing_rep": {
+        "sum": 40,
+        "count": 40
+      },
+      "non_positive_price": {
+        "sum": 40,
+        "count": 40
+      },
+      "unknown_customer": {
+        "sum": 4,
+        "count": 4
+      }
+    },
+    "rows_read": 346481,
+    "false_quarantine": 0,
+    "false_quarantine_rate": 0.0,
+    "held_because_parent_held": 198,
+    "dbt_tests": 52,
+    "dbt_tests_failed": 0
+  },
+  "win_model": {
+    "test_quotes": 11448,
+    "models": {
+      "segment_rate": {
+        "log_loss": 0.6835,
+        "brier": 0.2453,
+        "auc": 0.5734,
+        "ece": 0.02
+      },
+      "logistic": {
+        "log_loss": 0.6598,
+        "brier": 0.2338,
+        "auc": 0.6446,
+        "ece": 0.0161
+      },
+      "gbm": {
+        "log_loss": 0.6623,
+        "brier": 0.235,
+        "auc": 0.6385,
+        "ece": 0.015
+      },
+      "gbm_unconstrained": {
+        "log_loss": 0.6622,
+        "brier": 0.235,
+        "auc": 0.6387,
+        "ece": 0.0132
+      },
+      "oracle (true probabilities)": {
+        "log_loss": 0.6243,
+        "brier": 0.2177,
+        "auc": 0.7054,
+        "ece": 0.0102
+      }
+    },
+    "champion": "logistic",
+    "champion_by_line": {
+      "spare_parts": {
+        "log_loss": 0.6645,
+        "brier": 0.2361,
+        "auc": 0.6237,
+        "ece": 0.0128
+      },
+      "field_service": {
+        "log_loss": 0.6619,
+        "brier": 0.2348,
+        "auc": 0.6424,
+        "ece": 0.0232
+      },
+      "repairs": {
+        "log_loss": 0.668,
+        "brier": 0.2375,
+        "auc": 0.6118,
+        "ece": 0.0302
+      },
+      "upgrades": {
+        "log_loss": 0.5962,
+        "brier": 0.2037,
+        "auc": 0.5956,
+        "ece": 0.0254
+      },
+      "ltsa": {
+        "log_loss": 0.6519,
+        "brier": 0.2295,
+        "auc": 0.5907,
+        "ece": 0.049
+      }
+    }
+  },
+  "price_response": {
+    "spare_parts": {
+      "true_effect_of_5pct_price_rise": -0.0554,
+      "observational_logistic": -0.023,
+      "observational_gbm": -0.0123,
+      "observational_slope": {
+        "no_competitor": -1.1,
+        "competitor": -2.65
+      },
+      "true_slope": {
+        "no_competitor": -4.0,
+        "competitor": -6.0
+      },
+      "experiment": -0.0484,
+      "experiment_slope": {
+        "no_competitor": -1.74,
+        "competitor": -6.01,
+        "ci95_no_competitor": [
+          -4.7,
+          1.22
+        ],
+        "ci95_competitor": [
+          -8.5,
+          -3.53
+        ],
+        "test_quotes": 2536,
+        "validated": true
+      }
+    },
+    "field_service": {
+      "true_effect_of_5pct_price_rise": -0.0392,
+      "observational_logistic": 0.0004,
+      "observational_gbm": -0.0048,
+      "observational_slope": {
+        "no_competitor": 0.76,
+        "competitor": -0.79
+      },
+      "true_slope": {
+        "no_competitor": -3.0,
+        "competitor": -4.5
+      },
+      "experiment": -0.0288,
+      "experiment_slope": {
+        "no_competitor": -0.41,
+        "competitor": -5.02,
+        "ci95_no_competitor": [
+          -4.65,
+          3.84
+        ],
+        "ci95_competitor": [
+          -9.58,
+          -0.46
+        ],
+        "test_quotes": 995,
+        "validated": true
+      }
+    },
+    "repairs": {
+      "true_effect_of_5pct_price_rise": -0.0326,
+      "observational_logistic": 0.0322,
+      "observational_gbm": -0.0031,
+      "observational_slope": {
+        "no_competitor": 3.66,
+        "competitor": 2.11
+      },
+      "true_slope": {
+        "no_competitor": -2.5,
+        "competitor": -3.75
+      }
+    },
+    "upgrades": {
+      "true_effect_of_5pct_price_rise": -0.0215,
+      "observational_logistic": 0.0259,
+      "observational_gbm": -0.0021,
+      "observational_slope": {
+        "no_competitor": 3.02,
+        "competitor": 1.47
+      },
+      "true_slope": {
+        "no_competitor": -2.0,
+        "competitor": -3.0
+      }
+    },
+    "ltsa": {
+      "true_effect_of_5pct_price_rise": -0.0169,
+      "observational_logistic": 0.04,
+      "observational_gbm": -0.002,
+      "observational_slope": {
+        "no_competitor": 4.02,
+        "competitor": 2.47
+      },
+      "true_slope": {
+        "no_competitor": -1.5,
+        "competitor": -2.25
+      }
+    }
+  },
+  "recommendations": {
+    "test_quotes": 11448,
+    "policies": {
+      "production (price-test slopes, validated lines only)": {
+        "margin_uplift_all": 0.0093,
+        "margin_uplift_validated_lines": 0.04,
+        "expected_margin_gain_eur": 10485740.0,
+        "win_rate_change": -0.004,
+        "win_rate_change_validated_lines": -0.005,
+        "average_price_change": 0.0163,
+        "quotes_repriced": 8978,
+        "guardrail_violations": 0,
+        "by_line": {
+          "spare_parts": {
+            "margin_uplift": 0.0319,
+            "win_rate_change": 0.0025,
+            "average_price_change": 0.0135
+          },
+          "field_service": {
+            "margin_uplift": 0.0625,
+            "win_rate_change": -0.0242,
+            "average_price_change": 0.0381
+          },
+          "repairs": {
+            "margin_uplift": 0.0,
+            "win_rate_change": 0.0,
+            "average_price_change": 0.0
+          },
+          "upgrades": {
+            "margin_uplift": 0.0,
+            "win_rate_change": 0.0,
+            "average_price_change": 0.0
+          },
+          "ltsa": {
+            "margin_uplift": 0.0,
+            "win_rate_change": 0.0,
+            "average_price_change": 0.0
+          }
+        },
+        "uplift_ci95_validated_lines": [
+          0.0384,
+          0.0416
+        ],
+        "status_counts": {
+          "recommended": 9149,
+          "hold_unvalidated": 2082,
+          "deal_desk": 217
+        }
+      },
+      "observational slopes on every line": {
+        "margin_uplift_all": 0.0357,
+        "margin_uplift_validated_lines": 0.0033,
+        "expected_margin_gain_eur": 40217302.0,
+        "win_rate_change": -0.0802,
+        "win_rate_change_validated_lines": -0.0893,
+        "average_price_change": 0.0866,
+        "quotes_repriced": 11128,
+        "guardrail_violations": 0,
+        "by_line": {
+          "spare_parts": {
+            "margin_uplift": -0.0165,
+            "win_rate_change": -0.0994,
+            "average_price_change": 0.0912
+          },
+          "field_service": {
+            "margin_uplift": 0.0589,
+            "win_rate_change": -0.0636,
+            "average_price_change": 0.0822
+          },
+          "repairs": {
+            "margin_uplift": 0.0468,
+            "win_rate_change": -0.0537,
+            "average_price_change": 0.0841
+          },
+          "upgrades": {
+            "margin_uplift": 0.1152,
+            "win_rate_change": -0.0378,
+            "average_price_change": 0.0917
+          },
+          "ltsa": {
+            "margin_uplift": 0.0,
+            "win_rate_change": 0.0,
+            "average_price_change": 0.0
+          }
+        }
+      },
+      "oracle on validated lines (best possible)": {
+        "margin_uplift_all": 0.0123,
+        "margin_uplift_validated_lines": 0.0529,
+        "expected_margin_gain_eur": 13872279.0,
+        "win_rate_change": 0.0014,
+        "win_rate_change_validated_lines": 0.0017,
+        "average_price_change": 0.0102,
+        "quotes_repriced": 8989,
+        "guardrail_violations": 0,
+        "by_line": {
+          "spare_parts": {
+            "margin_uplift": 0.0468,
+            "win_rate_change": 0.0158,
+            "average_price_change": -0.0004
+          },
+          "field_service": {
+            "margin_uplift": 0.07,
+            "win_rate_change": -0.0341,
+            "average_price_change": 0.0462
+          },
+          "repairs": {
+            "margin_uplift": 0.0,
+            "win_rate_change": 0.0,
+            "average_price_change": 0.0
+          },
+          "upgrades": {
+            "margin_uplift": 0.0,
+            "win_rate_change": 0.0,
+            "average_price_change": 0.0
+          },
+          "ltsa": {
+            "margin_uplift": 0.0,
+            "win_rate_change": 0.0,
+            "average_price_change": 0.0
+          }
+        }
+      },
+      "oracle on every line (if every line had a test)": {
+        "margin_uplift_all": 0.0481,
+        "margin_uplift_validated_lines": 0.0529,
+        "expected_margin_gain_eur": 54191906.0,
+        "win_rate_change": -0.004,
+        "win_rate_change_validated_lines": 0.0017,
+        "average_price_change": 0.0204,
+        "quotes_repriced": 11038,
+        "guardrail_violations": 0,
+        "by_line": {
+          "spare_parts": {
+            "margin_uplift": 0.0468,
+            "win_rate_change": 0.0158,
+            "average_price_change": -0.0004
+          },
+          "field_service": {
+            "margin_uplift": 0.07,
+            "win_rate_change": -0.0341,
+            "average_price_change": 0.0462
+          },
+          "repairs": {
+            "margin_uplift": 0.0565,
+            "win_rate_change": -0.0257,
+            "average_price_change": 0.0407
+          },
+          "upgrades": {
+            "margin_uplift": 0.1156,
+            "win_rate_change": -0.0362,
+            "average_price_change": 0.0859
+          },
+          "ltsa": {
+            "margin_uplift": 0.0,
+            "win_rate_change": 0.0,
+            "average_price_change": 0.0
+          }
+        }
+      }
+    }
+  },
+  "leakage": {
+    "reps": {
+      "flagged": [
+        "RAM05",
+        "RAM11",
+        "RAP02",
+        "RAP03"
+      ],
+      "planted": [
+        "RAM05",
+        "RAM11",
+        "RAP02",
+        "RAP03",
+        "RAP13"
+      ],
+      "precision": 1.0,
+      "recall": 0.8,
+      "excess_concessions_eur": 9364081.86
+    },
+    "billing": {
+      "found": 173,
+      "planted_loaded": 173,
+      "precision": 1.0,
+      "recall": 1.0,
+      "gap_found_eur": 13024529.07,
+      "planted_gap_eur": 13028978.0
+    },
+    "rebates": {
+      "flagged": [
+        "C0136",
+        "C0243",
+        "C0303",
+        "C0304",
+        "C0486",
+        "C0571"
+      ],
+      "planted": [
+        "C0136",
+        "C0243",
+        "C0303",
+        "C0304",
+        "C0486",
+        "C0571"
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "overpaid_found_eur": 3141049.43,
+      "planted_overpaid_eur": 3887190.0,
+      "incomplete_years": 56
+    }
+  },
+  "forecast": {
+    "by_line": {
+      "field_service": {
+        "champion": "blend",
+        "validation_wape": {
+          "seasonal_naive": 0.146,
+          "ets": 0.138,
+          "pipeline_crm": 0.396,
+          "pipeline_learned": 0.121,
+          "blend": 0.112
+        },
+        "test_wape": 0.132,
+        "test_bias": -0.073,
+        "test_wape_seasonal_naive": 0.227,
+        "test_wape_pipeline_crm": 0.391,
+        "interval_coverage": 0.641
+      },
+      "ltsa": {
+        "champion": "blend",
+        "validation_wape": {
+          "seasonal_naive": 0.438,
+          "ets": 0.336,
+          "pipeline_crm": 1.794,
+          "pipeline_learned": 0.329,
+          "blend": 0.327
+        },
+        "test_wape": 0.252,
+        "test_bias": 0.025,
+        "test_wape_seasonal_naive": 0.276,
+        "test_wape_pipeline_crm": 1.937,
+        "interval_coverage": 0.667
+      },
+      "repairs": {
+        "champion": "pipeline_learned",
+        "validation_wape": {
+          "seasonal_naive": 0.223,
+          "ets": 0.239,
+          "pipeline_crm": 0.599,
+          "pipeline_learned": 0.171,
+          "blend": 0.183
+        },
+        "test_wape": 0.109,
+        "test_bias": -0.012,
+        "test_wape_seasonal_naive": 0.254,
+        "test_wape_pipeline_crm": 0.619,
+        "interval_coverage": 0.923
+      },
+      "spare_parts": {
+        "champion": "ets",
+        "validation_wape": {
+          "seasonal_naive": 0.098,
+          "ets": 0.093,
+          "pipeline_crm": 0.17,
+          "pipeline_learned": 0.141,
+          "blend": 0.094
+        },
+        "test_wape": 0.069,
+        "test_bias": -0.04,
+        "test_wape_seasonal_naive": 0.135,
+        "test_wape_pipeline_crm": 0.137,
+        "interval_coverage": 0.949
+      },
+      "upgrades": {
+        "champion": "blend",
+        "validation_wape": {
+          "seasonal_naive": 0.465,
+          "ets": 0.349,
+          "pipeline_crm": 2.036,
+          "pipeline_learned": 0.301,
+          "blend": 0.269
+        },
+        "test_wape": 0.156,
+        "test_bias": -0.061,
+        "test_wape_seasonal_naive": 0.344,
+        "test_wape_pipeline_crm": 1.756,
+        "interval_coverage": 0.846
+      }
+    },
+    "models_on_test": {
+      "seasonal_naive": {
+        "wape_total": 0.19,
+        "bias_total": -0.074
+      },
+      "ets": {
+        "wape_total": 0.168,
+        "bias_total": -0.021
+      },
+      "pipeline_crm": {
+        "wape_total": 1.551,
+        "bias_total": 1.521
+      },
+      "pipeline_learned": {
+        "wape_total": 0.164,
+        "bias_total": 0.005
+      },
+      "blend": {
+        "wape_total": 0.155,
+        "bias_total": -0.008
+      }
+    },
+    "total": {
+      "test_wape_champions": 0.154,
+      "interval_coverage": 0.805
+    },
+    "validation_origins": [
+      "2024-01-01",
+      "2025-04-01"
+    ],
+    "test_origins": [
+      "2025-07-01",
+      "2026-07-01"
+    ]
+  },
+  "assistant": {
+    "curated": {
+      "questions": 42,
+      "answer_accuracy": 1.0,
+      "answerable_accuracy": 1.0,
+      "refusals_correct": 1.0,
+      "policy_violations": 0,
+      "failures": []
+    },
+    "regression_v1": {
+      "questions": 30,
+      "answer_accuracy": 1.0,
+      "answerable_accuracy": 1.0,
+      "refusals_correct": 1.0,
+      "policy_violations": 0,
+      "failures": []
+    },
+    "heldout": {
+      "questions": 40,
+      "answer_accuracy": 0.825,
+      "answerable_accuracy": 0.781,
+      "refusals_correct": 1.0,
+      "policy_violations": 0,
+      "failures": [
+        {
+          "question": "emea win rate 2025",
+          "role": "pricing_analyst",
+          "refuse_expected": false,
+          "refused": true,
+          "reason": "I could not find a measure in the question. I can answer about: average_discount, booked_value_eur, invoiced_eur, off_invoice_eur, off_invoice_pct, pocket_margin_pct, pocket_price_eur, pocket_to_list_pct, quote_count, quoted_margin_pct, quoted_value_eur, win_rate",
+          "correct": false,
+          "policy_violation": false,
+          "parsed": null
+        },
+        {
+          "question": "What was the margin on our quotes to oil & gas customers in March 2026?",
+          "role": "pricing_analyst",
+          "refuse_expected": false,
+          "refused": false,
+          "correct": false,
+          "policy_violation": false,
+          "parsed": {
+            "metrics": [
+              "quote_count"
+            ],
+            "dimensions": [
+              "customer_name"
+            ],
+            "filters": {},
+            "start": "2026-03-01",
+            "end": "2026-04-01",
+            "order_by": null,
+            "descending": true,
+            "limit": null
+          }
+        },
+        {
+          "question": "who are my top 3 account managers by order intake since 2025?",
+          "role": "regional_manager",
+          "refuse_expected": false,
+          "refused": false,
+          "correct": false,
+          "policy_violation": false,
+          "parsed": {
+            "metrics": [
+              "booked_value_eur"
+            ],
+            "dimensions": [
+              "customer_name"
+            ],
+            "filters": {
+              "region": [
+                "MIDDLE_EAST"
+              ]
+            },
+            "start": "2025-01-01",
+            "end": "2026-10-01",
+            "order_by": "booked_value_eur",
+            "descending": true,
+            "limit": 3
+          }
+        },
+        {
+          "question": "Can you show me the discount level by customer segment for upgrades quoted in the first half of 2025?",
+          "role": "pricing_analyst",
+          "refuse_expected": false,
+          "refused": false,
+          "correct": false,
+          "policy_violation": false,
+          "parsed": {
+            "metrics": [
+              "average_discount"
+            ],
+            "dimensions": [
+              "segment"
+            ],
+            "filters": {
+              "service_line": [
+                "upgrades"
+              ]
+            },
+            "start": "2025-01-01",
+            "end": "2026-01-01",
+            "order_by": null,
+            "descending": true,
+            "limit": null
+          }
+        },
+        {
+          "question": "revenue utility vs ipp 2025",
+          "role": "pricing_analyst",
+          "refuse_expected": false,
+          "refused": false,
+          "correct": false,
+          "policy_violation": false,
+          "parsed": {
+            "metrics": [
+              "invoiced_eur"
+            ],
+            "dimensions": [],
+            "filters": {
+              "segment": [
+                "utility"
+              ]
+            },
+            "start": "2025-01-01",
+            "end": "2026-01-01",
+            "order_by": null,
+            "descending": true,
+            "limit": null
+          }
+        },
+        {
+          "question": "win rate by service line for urgent vs non-urgent jobs in 2025",
+          "role": "pricing_analyst",
+          "refuse_expected": false,
+          "refused": false,
+          "correct": false,
+          "policy_violation": false,
+          "parsed": {
+            "metrics": [
+              "win_rate"
+            ],
+            "dimensions": [
+              "service_line"
+            ],
+            "filters": {
+              "outage_urgent": [
+                true
+              ]
+            },
+            "start": "2025-01-01",
+            "end": "2026-01-01",
+            "order_by": null,
+            "descending": true,
+            "limit": null
+          }
+        },
+        {
+          "question": "which 10 reps gave the deepest discounts to oil and gas customers over the last 18 months?",
+          "role": "pricing_analyst",
+          "refuse_expected": false,
+          "refused": true,
+          "reason": "I could not find a measure in the question. I can answer about: average_discount, booked_value_eur, invoiced_eur, off_invoice_eur, off_invoice_pct, pocket_margin_pct, pocket_price_eur, pocket_to_list_pct, quote_count, quoted_margin_pct, quoted_value_eur, win_rate",
+          "correct": false,
+          "policy_violation": false,
+          "parsed": null
+        }
+      ]
+    }
+  },
+  "monitoring": {
+    "psi": {
+      "log_ratio": 0.0086,
+      "log_list_eur": 0.0238,
+      "competitor_present": 0.0001,
+      "outage_urgent": 0.0001,
+      "prior_win_rate": 0.1061,
+      "log_competitor_index": 0.1829,
+      "service_line": 0.0028,
+      "product_family": 0.0081,
+      "region": 0.0024,
+      "segment": 0.0022,
+      "unit_type": 0.0008
+    },
+    "recent_quotes": 2608,
+    "recent_decided": 2394,
+    "ece_recent": 0.017,
+    "alerts": []
+  },
+  "measures": {
+    "data_quality_planted_defects_caught": 1.0,
+    "data_quality_false_quarantine_rate": 0.0,
+    "win_model_log_loss_vs_segment_rate": -0.0237,
+    "win_model_ece": 0.0161,
+    "experiment_effect_error_spare_parts": 0.007,
+    "recommendation_margin_uplift_validated_lines": 0.04,
+    "recommendation_uplift_ci_low": 0.0384,
+    "recommendation_win_rate_change": -0.005,
+    "guardrail_violations": 0,
+    "leakage_rep_precision": 1.0,
+    "leakage_rep_recall": 0.8,
+    "billing_exceptions_recall": 1.0,
+    "rebate_overpayment_precision": 1.0,
+    "forecast_wape_vs_seasonal_naive": -0.036,
+    "forecast_interval_coverage": 0.805,
+    "assistant_answer_accuracy": 1.0,
+    "assistant_heldout_accuracy": 0.825,
+    "assistant_policy_violations": 0
+  },
+  "gate_passed": true,
+  "seconds": 17.5
+}

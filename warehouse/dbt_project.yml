@@ -1,0 +1,29 @@
+name: pricing_warehouse
+version: "1.0.0"
+config-version: 2
+profile: pricing_warehouse
+
+model-paths: [models]
+test-paths: [tests]
+macro-paths: [macros]
+packages-install-path: ../out/dbt/packages
+
+flags:
+  send_anonymous_usage_stats: false
+
+vars:
+  as_of: "2026-09-30"
+  cost_of_capital: 0.08
+  standard_terms_days: 30
+
+models:
+  pricing_warehouse:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: table
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: marts

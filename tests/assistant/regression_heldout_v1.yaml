@@ -1,0 +1,95 @@
+# Held-out set v1, written from the semantic model only. First run: 25 of 30 correct (83%), 0 policy
+# violations. The parser was then fixed for the five failures, so this set is now a regression set;
+# tests/assistant/heldout.yaml is a fresh set that has not been used to change the parser.
+as_of: 2026-09-30
+cases:
+  - q: What was our win rate by service line last year?
+    user: {role: pricing_analyst}
+    expect: {metrics: [win_rate], dimensions: [service_line], start: 2025-01-01, end: 2026-01-01}
+  - q: average discount EMEA vs APAC since 2024
+    user: {role: pricing_analyst}
+    expect: {metrics: [average_discount], dimensions: [region], filters: {region: [EMEA, APAC]}, start: 2024-01-01, end: 2026-10-01}
+  - q: How many quotes went out in March 2026?
+    user: {role: sales_rep, region: EMEA}
+    expect: {metrics: [quote_count], filters: {region: [EMEA]}, start: 2026-03-01, end: 2026-04-01}
+  - q: Can you break down win rate by whether a competitor was in the deal, last 12 months?
+    user: {role: regional_manager, region: AMERICAS}
+    expect: {metrics: [win_rate], dimensions: [competitor_present], filters: {region: [AMERICAS]}, start: 2025-10-01, end: 2026-10-01}
+  - q: What's the win rate in EMEA this year?
+    user: {role: sales_rep, region: APAC}
+    refuse: true
+  - q: Top 5 customers by off-invoice leakage this year
+    user: {role: pricing_analyst}
+    expect: {metrics: [off_invoice_eur], dimensions: [customer_name], start: 2026-01-01, end: 2026-10-01, order_by: off_invoice_eur, descending: true, limit: 5}
+  - q: Which product family has the lowest pocket price realisation?
+    user: {role: pricing_analyst}
+    expect: {metrics: [pocket_to_list_pct], dimensions: [product_family], order_by: pocket_to_list_pct, descending: false, limit: 10}
+  - q: pocket margin by service line YTD
+    user: {role: regional_manager, region: MIDDLE_EAST}
+    expect: {metrics: [pocket_margin_pct], dimensions: [service_line], filters: {region: [MIDDLE_EAST]}, start: 2026-01-01, end: 2026-10-01}
+  - q: What's our order intake for upgrades over the last 6 months?
+    user: {role: sales_rep, region: APAC}
+    expect: {metrics: [booked_value_eur], filters: {service_line: [upgrades], region: [APAC]}, start: 2026-04-01, end: 2026-10-01}
+  - q: Show me pocket margin by service line
+    user: {role: sales_rep, region: EMEA}
+    refuse: true
+  - q: Quoted margin for oil and gas customers in 2023
+    user: {role: pricing_analyst}
+    expect: {metrics: [quoted_margin_pct], filters: {segment: [oil_and_gas]}, start: 2023-01-01, end: 2024-01-01}
+  - q: Do we discount less when the outage is urgent? Average discount on field service split by outage urgency, please.
+    user: {role: pricing_analyst}
+    expect: {metrics: [average_discount], dimensions: [outage_urgent], filters: {service_line: [field_service]}}
+  - q: Which reps have the best hit rate this year?
+    user: {role: regional_manager, region: EMEA}
+    expect: {metrics: [win_rate], dimensions: [rep_name], filters: {region: [EMEA]}, start: 2026-01-01, end: 2026-10-01, order_by: win_rate, descending: true, limit: 10}
+  - q: Total quoted value by region and segment for 2025
+    user: {role: pricing_analyst}
+    expect: {metrics: [quoted_value_eur], dimensions: [region, segment], start: 2025-01-01, end: 2026-01-01}
+  - q: Which sales reps have the highest bookings?
+    user: {role: sales_rep, region: AMERICAS}
+    refuse: true
+  - q: how much did we invoice to utilities last quarter
+    user: {role: sales_rep, region: AMERICAS}
+    expect: {metrics: [invoiced_eur], filters: {segment: [utility], region: [AMERICAS]}, start: 2026-07-01, end: 2026-10-01}
+  - q: Leakage rate for LTSAs vs spare parts
+    user: {role: pricing_analyst}
+    expect: {metrics: [off_invoice_pct], dimensions: [service_line], filters: {service_line: [ltsa, spare_parts]}}
+  - q: Bookings and win rate by segment, last 3 months
+    user: {role: regional_manager, region: APAC}
+    expect: {metrics: [booked_value_eur, win_rate], dimensions: [segment], filters: {region: [APAC]}, start: 2026-07-01, end: 2026-10-01}
+  - q: Compare win rate and invoiced revenue by region for 2025
+    user: {role: pricing_analyst}
+    refuse: true
+  - q: How much pocket revenue did we make on repairs in the Middle East in 2024?
+    user: {role: pricing_analyst}
+    expect: {metrics: [pocket_price_eur], filters: {service_line: [repairs], region: [MIDDLE_EAST]}, start: 2024-01-01, end: 2025-01-01}
+  - q: Quote volume on urgent outages where a competitor was bidding, since 2025
+    user: {role: sales_rep, region: EMEA}
+    expect: {metrics: [quote_count], filters: {outage_urgent: [true], competitor_present: [true], region: [EMEA]}, start: 2025-01-01, end: 2026-10-01}
+  - q: Bottom 3 service lines by win rate in competitive deals
+    user: {role: pricing_analyst}
+    expect: {metrics: [win_rate], dimensions: [service_line], filters: {competitor_present: [true]}, order_by: win_rate, descending: false, limit: 3}
+  - q: concession rate by customer type in 2025
+    user: {role: regional_manager, region: AMERICAS}
+    expect: {metrics: [off_invoice_pct], dimensions: [segment], filters: {region: [AMERICAS]}, start: 2025-01-01, end: 2026-01-01}
+  - q: Break everything down by segment for last quarter
+    user: {role: pricing_analyst}
+    refuse: true
+  - q: What's the average discount we give IPPs on upgrades?
+    user: {role: pricing_analyst}
+    expect: {metrics: [average_discount], filters: {segment: [ipp], service_line: [upgrades]}}
+  - q: price realisation by product family over the last 12 months
+    user: {role: sales_rep, region: MIDDLE_EAST}
+    expect: {metrics: [pocket_to_list_pct], dimensions: [product_family], filters: {region: [MIDDLE_EAST]}, start: 2025-10-01, end: 2026-10-01}
+  - q: Top 10 accounts by invoiced revenue in August 2026
+    user: {role: pricing_analyst}
+    expect: {metrics: [invoiced_eur], dimensions: [customer_name], start: 2026-08-01, end: 2026-09-01, order_by: invoiced_eur, descending: true, limit: 10}
+  - q: How does our leakage compare to AMERICAS?
+    user: {role: regional_manager, region: APAC}
+    refuse: true
+  - q: Gross margin on quotes, industrial vs utility, this year
+    user: {role: regional_manager, region: EMEA}
+    expect: {metrics: [quoted_margin_pct], dimensions: [segment], filters: {segment: [industrial, utility], region: [EMEA]}, start: 2026-01-01, end: 2026-10-01}
+  - q: What did we book in spare parts last year, by region?
+    user: {role: pricing_analyst}
+    expect: {metrics: [booked_value_eur], dimensions: [region], filters: {service_line: [spare_parts]}, start: 2025-01-01, end: 2026-01-01}

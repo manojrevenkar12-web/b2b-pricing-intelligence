@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: int_quotes_eur
+    description: Quotes in EUR with product, customer, standard cost and alloy index.
+    columns:
+      - name: quote_id
+        tests: [unique, not_null]
+      - name: list_eur
+        tests: [not_null]
+      - name: cost_eur
+        tests: [not_null]
+  - name: int_competitor_index
+    description: Point-in-time competitor price level per region, family and month.
+  - name: int_customer_history
+    description: Each quote's customer history, counting only earlier decisions.
+    columns:
+      - name: quote_id
+        tests: [unique, not_null]
+  - name: int_invoice_waterfall
+    description: Price waterfall per invoice in EUR.
+    columns:
+      - name: invoice_id
+        tests: [unique, not_null]

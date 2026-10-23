@@ -1,0 +1,10 @@
+source: erp_standard_cost
+owner: Controlling (ERP costing)
+description: Standard cost per product and month in EUR, per unit of scope.
+key: [product_id, month]
+columns:
+  product_id: {type: string, required: true}
+  month: {type: date, required: true}
+  unit_cost_eur: {type: float, required: true, min_exclusive: 0}
+relations:
+  - {column: product_id, references: erp_products.product_id}

@@ -1,0 +1,8 @@
+source: crm_opportunity_stages
+owner: Global Sales Operations (CRM)
+description: Stage history of each opportunity (one row per stage entered).
+key: [opportunity_id, stage]
+columns:
+  opportunity_id: {type: string, required: true}
+  stage: {type: string, required: true, allowed: [qualify, propose, negotiate, commit, closed]}
+  entered_at: {type: date, required: true, max: as_of}

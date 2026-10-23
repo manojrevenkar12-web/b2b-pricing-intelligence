@@ -1,0 +1,11 @@
+source: erp_price_list
+owner: Global Pricing Strategy
+description: Published list prices in EUR, one row per product and validity period.
+key: [product_id, valid_from]
+columns:
+  product_id: {type: string, required: true}
+  valid_from: {type: date, required: true}
+  valid_to: {type: date, required: true}
+  list_price_eur: {type: float, required: true, min_exclusive: 0}
+relations:
+  - {column: product_id, references: erp_products.product_id}

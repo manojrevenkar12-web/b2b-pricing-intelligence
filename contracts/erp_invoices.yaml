@@ -1,0 +1,22 @@
+source: erp_invoices
+owner: Finance (ERP billing)
+description: Invoices for won quotes, in the billing currency.
+key: [invoice_id]
+columns:
+  invoice_id: {type: string, required: true}
+  quote_id: {type: string, required: true}
+  customer_id: {type: string, required: true}
+  invoice_date: {type: date, required: true, max: as_of}
+  currency: {type: string, required: true, allowed: [EUR, USD, GBP, AED]}
+  amount_lc: {type: float, required: true, min_exclusive: 0}
+  payment_terms_days: {type: int, required: true, min: 0, max: 180}
+relations:
+  - {column: quote_id, references: cpq_quotes.quote_id}
+  - {column: customer_id, references: crm_accounts.customer_id}
+checks:
+  # An interface once sent cents instead of units. An invoice more than five times its quote
+  # cannot be right; it is held back until Finance confirms the amount.
+  - name: amount_implausible_vs_quote
+    sql: |
+      select i.invoice_id from erp_invoices i join cpq_quotes q using (quote_id)
+      where i.amount_lc > 5 * q.net_price_lc

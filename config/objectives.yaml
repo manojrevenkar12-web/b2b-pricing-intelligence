@@ -1,0 +1,21 @@
+# What the pipeline must achieve before a model version may be promoted. `bpi gate` checks the
+# latest evaluation against these and fails CI when one is missed.
+objectives:
+  data_quality_planted_defects_caught: {op: ">=", target: 0.99}
+  data_quality_false_quarantine_rate: {op: "<=", target: 0.001}
+  win_model_log_loss_vs_segment_rate: {op: "<=", target: -0.02}   # champion beats the spreadsheet rate
+  win_model_ece: {op: "<=", target: 0.03}
+  experiment_effect_error_spare_parts: {op: "<=", target: 0.02}     # |estimated - true| win-rate change at +5% price
+  recommendation_margin_uplift_validated_lines: {op: ">=", target: 0.01}
+  recommendation_uplift_ci_low: {op: ">", target: 0.0}
+  recommendation_win_rate_change: {op: ">=", target: -0.03}
+  guardrail_violations: {op: "<=", target: 0}
+  leakage_rep_precision: {op: ">=", target: 0.8}
+  leakage_rep_recall: {op: ">=", target: 0.8}
+  billing_exceptions_recall: {op: ">=", target: 0.95}
+  rebate_overpayment_precision: {op: ">=", target: 0.99}
+  forecast_wape_vs_seasonal_naive: {op: "<", target: 0.0}            # champions beat last year's same month
+  forecast_interval_coverage: {op: ">=", target: 0.7}
+  assistant_answer_accuracy: {op: ">=", target: 0.95}               # curated and retired held-out sets
+  assistant_heldout_accuracy: {op: ">=", target: 0.75}              # a set never used to change the parser
+  assistant_policy_violations: {op: "<=", target: 0}

@@ -1,0 +1,37 @@
+# Business settings for Gas Services pricing. Changes here are reviewed by Global Pricing Strategy
+# (see CODEOWNERS); the evaluation gate reruns on every change.
+
+as_of: 2026-09-30        # data snapshot date
+train_end: 2025-07-01    # models learn from quotes decided before this date
+test_end: 2026-10-01     # and are judged on quotes decided from train_end up to here
+
+cost_of_capital: 0.08    # per year; prices the cost of payment terms beyond the standard
+standard_terms_days: 30
+
+guardrails:
+  # Floor: a recommendation never goes below cost / (1 - min_margin).
+  min_margin:
+    spare_parts: 0.25
+    field_service: 0.20
+    repairs: 0.20
+    upgrades: 0.15
+    ltsa: 0.10
+  max_move_vs_quote: 0.10   # a recommendation is a range around the rep's price, not an override
+  max_above_list: 0.0       # never quote above the published list price
+  deal_desk_lines: [ltsa]   # long-term service agreements are priced by the deal desk
+
+price_tests:
+  # A service line's price response may drive recommendations only once a randomised price test
+  # has measured it this precisely (standard error of the slope, with and without a competitor).
+  max_slope_se: 2.5
+
+leakage:
+  rep_z: 3.0                # a rep is flagged when off-invoice concessions sit this far above peers
+
+monitoring:
+  psi_alert: 0.2            # population stability index per feature, recent quarter vs training
+  ece_alert: 0.04           # expected calibration error of the win model on recent decisions
+
+forecast:
+  horizons: [1, 2, 3]       # months ahead
+  interval: 0.8             # share of outcomes the forecast interval should contain

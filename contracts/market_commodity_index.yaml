@@ -1,0 +1,7 @@
+source: market_commodity_index
+owner: Market intelligence
+description: Monthly nickel-alloy price index (cost driver for hot-gas-path parts and repairs).
+key: [month]
+columns:
+  month: {type: date, required: true}
+  nickel_alloy_index: {type: float, required: true, min_exclusive: 0}

@@ -1,0 +1,89 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  DO_NOT_TRACK: "1"
+
+jobs:
+  check:
+    name: lint, types, tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: ruff check src tests
+      - run: ruff format --check src tests
+      - run: mypy
+      - run: pytest -q -p no:warnings
+
+  pipeline:
+    name: full pipeline, evaluation and release gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e .
+      - name: generate, ingest, dbt build, train, evaluate, export, gate
+        run: bpi run
+      - name: handover readiness
+        run: bpi handover-check
+      - name: assistant smoke test
+        run: bpi ask "win rate by region in 2025" --role sales_rep --region EMEA
+      - name: summary
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          r = json.load(open("reports/evaluation.json"))
+          print(f"Model `{r['model_version']}`, gate **{'passed' if r['gate_passed'] else 'FAILED'}**\n")
+          print("| measure | value |\n|---|---|")
+          for k, v in r["measures"].items():
+              print(f"| {k} | {v} |")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            reports
+            out/powerbi
+            out/registry
+          retention-days: 14
+
+  container:
+    name: container and API smoke test
+    needs: pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t bpi:ci .
+      - name: run the pipeline inside the image, then serve it
+        run: |
+          mkdir -p home && chmod 777 home
+          docker run --rm -v "$PWD/home:/data" bpi:ci bpi run
+          docker run -d --name api -p 8000:8000 -v "$PWD/home:/data" \
+            -e BPI_API_KEYS='{"ci-key": {"role": "sales_rep", "region": "EMEA"}}' bpi:ci
+          for i in $(seq 1 30); do curl -sf localhost:8000/readyz && break; sleep 2; done
+          curl -sf localhost:8000/readyz
+          code=$(curl -s -o /dev/null -w "%{http_code}" localhost:8000/v1/model)
+          test "$code" = "401"
+          curl -sf -H "Authorization: Bearer ci-key" -H "content-type: application/json" \
+            -d '{"question": "average discount by service line last quarter"}' localhost:8000/v1/ask | tee ask.json
+          python3 -c "import json; a=json.load(open('ask.json')); assert a['ok'] and \"region in ('EMEA')\" in a['sql'], a"
+      - if: failure()
+        run: docker logs api || true

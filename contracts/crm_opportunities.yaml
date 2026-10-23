@@ -1,0 +1,17 @@
+source: crm_opportunities
+owner: Global Sales Operations (CRM)
+description: Sales opportunities. The CRM export re-sends rows; exact duplicates are dropped.
+key: [opportunity_id]
+columns:
+  opportunity_id: {type: string, required: true}
+  customer_id: {type: string, required: true}
+  owner_rep_id: {type: string, required: true}
+  service_line: {type: string, required: true, allowed: [spare_parts, field_service, repairs, upgrades, ltsa]}
+  created_at: {type: date, required: true, max: as_of}
+  expected_close_date: {type: date, required: true}
+  amount_estimate: {type: float, required: true, min: 0}
+  currency: {type: string, required: true, allowed: [EUR, USD, GBP, AED]}
+  status: {type: string, required: true, allowed: [open, closed_won, closed_lost]}
+  closed_at: {type: date, required: false, max: as_of}
+relations:
+  - {column: customer_id, references: crm_accounts.customer_id}

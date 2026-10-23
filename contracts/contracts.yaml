@@ -1,0 +1,12 @@
+source: contracts
+owner: Commercial contract management
+description: Contracted rebate rates and payment terms per customer.
+key: [customer_id, valid_from]
+columns:
+  customer_id: {type: string, required: true}
+  rebate_rate: {type: float, required: true, min: 0, max: 0.1}
+  standard_terms_days: {type: int, required: true, min: 0, max: 180}
+  valid_from: {type: date, required: true}
+  valid_to: {type: date, required: true}
+relations:
+  - {column: customer_id, references: crm_accounts.customer_id}

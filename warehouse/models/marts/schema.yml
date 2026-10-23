@@ -1,0 +1,81 @@
+version: 2
+
+models:
+  - name: fct_quotes
+    description: >
+      One row per quote with everything known on the quote date (customer, competitor presence and
+      price level, urgency, history, cost) and the outcome. Grain: quote_id.
+    columns:
+      - name: quote_id
+        description: CPQ quote number.
+        tests: [unique, not_null]
+      - name: customer_id
+        tests:
+          - relationships: {arguments: {to: ref('dim_customer'), field: customer_id}}
+      - name: rep_id
+        tests:
+          - relationships: {arguments: {to: ref('dim_rep'), field: rep_id}}
+      - name: product_id
+        tests:
+          - relationships: {arguments: {to: ref('dim_product'), field: product_id}}
+      - name: service_line
+        tests:
+          - accepted_values: {arguments: {values: [spare_parts, field_service, repairs, upgrades, ltsa]}}
+      - name: status
+        tests:
+          - accepted_values: {arguments: {values: [open, won, lost]}}
+      - name: price_ratio
+        description: Net price over list price.
+        tests: [not_null]
+      - name: net_eur
+        description: Quoted net price in EUR at the quote month's rate.
+        tests: [not_null]
+      - name: cost_eur
+        description: Standard cost of the quoted scope.
+        tests: [not_null]
+      - name: prior_win_rate
+        description: Customer's win rate on decisions before the quote date, smoothed.
+  - name: fct_price_waterfall
+    description: >
+      Price waterfall per invoice in EUR, from list price to pocket price and pocket margin.
+      Grain: invoice_id.
+    columns:
+      - name: invoice_id
+        tests: [unique, not_null]
+      - name: quote_id
+        tests:
+          - relationships: {arguments: {to: ref('fct_quotes'), field: quote_id}}
+      - name: pocket_eur
+        description: What the business keeps after every on- and off-invoice concession.
+        tests: [not_null]
+  - name: fct_billing_exceptions
+    description: Invoices billed more than 0.5% below the approved quote.
+    columns:
+      - name: invoice_id
+        tests: [unique, not_null]
+  - name: fct_rebate_reconciliation
+    description: Rebates paid against contract entitlement per customer and year.
+  - name: fct_bookings_monthly
+    description: Bookings per month, region and service line (every combination, zeros included).
+  - name: fct_pipeline_snapshots
+    description: Open opportunities as of the start of each month, for pipeline forecasts.
+  - name: dim_customer
+    description: Customers with region, segment, contracted rebate rate and terms.
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]
+  - name: dim_product
+    description: Service and parts catalogue.
+    columns:
+      - name: product_id
+        tests: [unique, not_null]
+  - name: dim_rep
+    description: Sales reps.
+    columns:
+      - name: rep_id
+        tests: [unique, not_null]
+  - name: dim_month
+    description: Calendar months.
+    columns:
+      - name: month
+        tests: [unique, not_null]
