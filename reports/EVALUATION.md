@@ -1,6 +1,6 @@
 # Evaluation
 
-Model version `20261023T100057Z`, data to 2026-09-30. Everything below is measured against the simulation's truth, which the pipeline itself never reads. Regenerate with `bpi run`.
+Model version `20261023T100432Z`, data to 2026-09-30. Everything below is measured against the simulation's truth, which the pipeline itself never reads. Regenerate with `bpi run`.
 
 ## Data layer
 

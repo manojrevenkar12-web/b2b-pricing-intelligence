@@ -28,7 +28,7 @@ DRIFT_FEATURES = [
 
 
 def psi(expected: pd.Series, actual: pd.Series, bins: int = 10) -> float:
-    if expected.dtype == object or expected.nunique() <= 12:
+    if not pd.api.types.is_numeric_dtype(expected) or expected.nunique() <= 12:
         e = expected.value_counts(normalize=True)
         a = actual.value_counts(normalize=True)
         cats = e.index.union(a.index)
