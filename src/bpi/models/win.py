@@ -162,7 +162,7 @@ class GBM:
 
     def predict(self, q: pd.DataFrame, ratio=None) -> np.ndarray:
         assert self.model is not None
-        return self.model.predict_proba(self._frame(q, ratio))[:, 1]
+        return np.asarray(self.model.predict_proba(self._frame(q, ratio)))[:, 1]
 
 
 def ece(y: np.ndarray, p: np.ndarray, bins: int = 10) -> float:

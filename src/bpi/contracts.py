@@ -155,14 +155,19 @@ def _row_key(df: pd.DataFrame, contract: Contract) -> pd.Series:
     return df[cols].astype(str).agg("|".join, axis=1)
 
 
+def _run(con: duckdb.DuckDBPyConnection, sql: str, params: list | None = None) -> list[tuple]:
+    """Execute and fetch everything, so no result is left open on the connection."""
+    return con.execute(sql, params or []).fetchall()
+
+
 def ingest(raw_dir: Path, db_path: Path, as_of: date, contracts: dict[str, Contract] | None = None) -> dict:
     contracts = contracts or load_contracts()
     db_path.parent.mkdir(parents=True, exist_ok=True)
     if db_path.exists():
         db_path.unlink()
     con = duckdb.connect(str(db_path))
-    con.execute("create schema raw")
-    con.execute("create table raw._quarantine (source varchar, row_key varchar, reason varchar, row_json varchar)")
+    _run(con, "create schema raw")
+    _run(con, "create table raw._quarantine (source varchar, row_key varchar, reason varchar, row_json varchar)")
     reports: dict[str, SourceReport] = {}
     quarantined_keys: dict[str, set[str]] = {}
     unknown = sorted({p.stem for p in raw_dir.glob("*.csv")} - set(contracts))
@@ -192,18 +197,18 @@ def ingest(raw_dir: Path, db_path: Path, as_of: date, contracts: dict[str, Contr
                 q_parts.append(bad.astype(str).assign(_reason=reason))
                 typed = typed[ok].reset_index(drop=True)
         con.register("_typed", typed)
-        con.execute(f"create table raw.{source} as select * from _typed")
+        _run(con, f"create table raw.{source} as select * from _typed")
         con.unregister("_typed")
         # Cross-source checks: rows they select are taken back out of the loaded table.
         for chk in c.checks:
-            con.execute("set search_path = 'raw'")
-            keys = [r[0] for r in con.execute(chk["sql"]).fetchall()]
-            con.execute("set search_path = 'main'")
+            _run(con, "set search_path = 'raw'")
+            keys = [r[0] for r in _run(con, chk["sql"])]
+            _run(con, "set search_path = 'main'")
             if keys:
                 kcol = c.key[0]
                 held = typed[typed[kcol].isin(keys)]
                 q_parts.append(held.astype(str).assign(_reason=chk["name"]))
-                con.execute(f"delete from raw.{source} where {kcol} in (select unnest(?))", [keys])
+                _run(con, f"delete from raw.{source} where {kcol} in (select unnest(?))", [keys])
         qall = pd.concat([p for p in q_parts if len(p)], ignore_index=True) if any(len(p) for p in q_parts) else None
         if qall is not None:
             rows = qall.drop(columns="_reason")
@@ -218,11 +223,11 @@ def ingest(raw_dir: Path, db_path: Path, as_of: date, contracts: dict[str, Contr
                 }
             )
             con.register("_q", payload)
-            con.execute("insert into raw._quarantine select * from _q")
+            _run(con, "insert into raw._quarantine select * from _q")
             con.unregister("_q")
             for reason, n in payload.groupby("reason").size().items():
                 rep.quarantined[str(reason)] = int(n)
-        rep.loaded = int(con.execute(f"select count(*) from raw.{source}").fetchone()[0])
+        rep.loaded = int(_run(con, f"select count(*) from raw.{source}")[0][0])
     con.close()
     return {
         s: {

@@ -19,6 +19,12 @@ class UnknownReference(ValueError):
     pass
 
 
+def _one(con, sql: str, params: list) -> tuple:
+    """First row (or an empty tuple), fetching the whole result so nothing stays open."""
+    rows = con.execute(sql, params).fetchall()
+    return rows[0] if rows else ()
+
+
 def build(quotes: list[dict], db=None) -> pd.DataFrame:
     con = warehouse.connect(db)
     rows = []
@@ -26,39 +32,45 @@ def build(quotes: list[dict], db=None) -> pd.DataFrame:
         for q in quotes:
             d = date.fromisoformat(str(q.get("quote_date") or date.today().isoformat()))
             month = date(d.year, d.month, 1)
-            prod = con.execute(
+            prod = _one(
+                con,
                 "select product_id, service_line, product_family, unit_type from marts.dim_product where product_id = ?",
                 [q["product_id"]],
-            ).fetchone()
-            cust = con.execute(
+            )
+            cust = _one(
+                con,
                 "select customer_id, region, segment, strategic_account, relationship_since from marts.dim_customer where customer_id = ?",
                 [q["customer_id"]],
-            ).fetchone()
-            if prod is None:
+            )
+            if not prod:
                 raise UnknownReference(f"unknown product {q['product_id']}")
-            if cust is None:
+            if not cust:
                 raise UnknownReference(f"unknown customer {q['customer_id']}")
             # Latest price list and standard cost on or before the quote date.
-            lp = con.execute(
+            lp = _one(
+                con,
                 "select list_price_eur from staging.stg_price_list where product_id = ? and valid_from <= ? order by valid_from desc limit 1",
                 [q["product_id"], d],
-            ).fetchone()
-            cost = con.execute(
+            )
+            cost = _one(
+                con,
                 "select unit_cost_eur from staging.stg_standard_cost where product_id = ? and month <= ? order by month desc limit 1",
                 [q["product_id"], month],
-            ).fetchone()
-            hist = con.execute(
+            )
+            hist = _one(
+                con,
                 "select count(*), coalesce(sum(won), 0) from marts.fct_quotes where customer_id = ? and is_decided and decision_date < ?",
                 [q["customer_id"], d],
-            ).fetchone()
-            ci = con.execute(
+            )
+            ci = _one(
+                con,
                 "select competitor_index from intermediate.int_competitor_index where region = ? and product_family = ? and month <= ? "
                 "and competitor_index is not null order by month desc limit 1",
                 [cust[1], prod[2], month],
-            ).fetchone()
-            nickel = con.execute(
-                "select nickel_alloy_index from staging.stg_commodity_index where month <= ? order by month desc limit 1", [month]
-            ).fetchone()
+            )
+            nickel = _one(
+                con, "select nickel_alloy_index from staging.stg_commodity_index where month <= ? order by month desc limit 1", [month]
+            )
             scope = int(q.get("scope_qty", 1))
             list_eur = float(lp[0]) * scope
             net = float(q["proposed_net_price_eur"])
