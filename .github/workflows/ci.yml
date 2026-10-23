@@ -72,10 +72,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t bpi:ci .
-      - name: run the pipeline inside the image, then serve it
+      - name: run the pipeline inside the image
         run: |
           mkdir -p home && chmod 777 home
-          docker run --rm -v "$PWD/home:/data" bpi:ci bpi run
+          scripts/ci-run.sh docker run --rm -v "$PWD/home:/data" bpi:ci bpi run
+      - name: serve it and call the API
+        run: |
           docker run -d --name api -p 8000:8000 -v "$PWD/home:/data" \
             -e BPI_API_KEYS='{"ci-key": {"role": "sales_rep", "region": "EMEA"}}' bpi:ci
           for i in $(seq 1 30); do curl -sf localhost:8000/readyz && break; sleep 2; done

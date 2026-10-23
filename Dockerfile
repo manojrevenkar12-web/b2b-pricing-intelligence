@@ -9,6 +9,8 @@ COPY config ./config
 COPY contracts ./contracts
 COPY semantic ./semantic
 COPY warehouse ./warehouse
+# Question sets the evaluation scores the assistant on.
+COPY tests/assistant ./tests/assistant
 RUN pip install --no-cache-dir .
 ENV BPI_HOME=/data BPI_REPO=/app PYTHONUNBUFFERED=1
 USER app
